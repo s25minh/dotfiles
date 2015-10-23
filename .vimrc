@@ -1,9 +1,15 @@
 "Gvim - MacVimの設定
 set guifontwide=ヒラギノ角ゴ\ Pro\ W3:h15
 syntax enable
-set background=dark
-colorscheme wombat256mod
 set t_Co=256
+"set background=dark
+let g:seoul256_background = 236
+colorscheme wombat256mod
+
+"無名クリップボードの有効化
+set clipboard+=unnamed
+
+"画面表示
 set laststatus=2
 set list
 set listchars=eol:×,tab:¦ ,trail:·
@@ -11,16 +17,13 @@ set smarttab
 set number
 set ruler
 set autoindent
-set smartindent
+set iminsert=0
 set showmatch
 set tabstop=4
 set shiftwidth=4
-set softtabstop=4
-set noexpandtab
+"set expandtab
 set whichwrap=b,s,[,],<,>
 set cursorline
-"無名クリップボードの有効化
-set clipboard+=unnamed
 "vi互換をオフする
 set nocompatible
 "システムレベルの貼り付けを使うとき便利なトーグル
@@ -29,8 +32,6 @@ set pastetoggle=<f5>
 "No beep sounds
 set noerrorbells
 set vb t_vb=
-"マウス使用可能
-set mouse=a
 "-----------------------------------------
 "Search
 "-----------------------------------------
@@ -50,16 +51,25 @@ inoremap {<Enter> {}<Left><CR><ESC><S-o>
 inoremap [<Enter> []<Left><CR><ESC><S-o>
 inoremap (<Enter> ()<Left><CR><ESC><S-o>
 
+"-----------------------------------------
+"ファイル処理関連
+"-----------------------------------------
+set autoread
+set nobackup
 set noswapfile
 
+"-----------------------------------------
+"カーソル移動関連
+"-----------------------------------------
 set scrolloff=8
+
 
 " 現在開いているファイルを実行 (only php)
 function! ExecuteCurrentFile()
-    if &filetype == 'js'
+    if &filetype == 'javascript'
         exe '!node %'
-    endif
-    if &filetype == 'php'
+	endif
+	if &filetype == 'php'
         exe '!' . &filetype . ' %'
     endif
 endfunction
@@ -111,7 +121,7 @@ inoremap <expr><C-l>     neocomplcache#complete_common_string()
 
 "Recommended key-mappings.
 "<CR>: close popup and save indent.
-"inoremap <expr><CR>  neocomplcache#smart_close_popup() . "\<CR>"
+inoremap <expr><CR>  neocomplcache#smart_close_popup() . "\<CR>"
 "<TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 "<C-h>, <BS>: close popup and delete backword char.
@@ -164,22 +174,43 @@ if has('conceal')
   set conceallevel=2 concealcursor=niv
 endif
 
+"syntastic シンタックス
 "NeoBundle 'scrooloose/syntastic'
 "set statusline+=%#warningmsg#
 "set statusline+=%{SyntasticStatuslineFlag()}
 "set statusline+=%*
-"
+
 "let g:syntastic_always_populate_loc_list = 1
 "let g:syntastic_auto_loc_list = 1
 "let g:syntastic_check_on_open = 1
 "let g:syntastic_check_on_wq = 0
 
+NeoBundle 'taichouchou2/html5.vim'
+" HTML 5 tags
+syn keyword htmlTagName contained article aside audio bb canvas command
+syn keyword htmlTagName contained datalist details dialog embed figure
+syn keyword htmlTagName contained header hgroup keygen mark meter nav output
+syn keyword htmlTagName contained progress time ruby rt rp section time
+syn keyword htmlTagName contained source figcaption
+syn keyword htmlArg contained autofocus autocomplete placeholder min max
+syn keyword htmlArg contained contenteditable contextmenu draggable hidden
+syn keyword htmlArg contained itemprop list sandbox subject spellcheck
+syn keyword htmlArg contained novalidate seamless pattern formtarget
+syn keyword htmlArg contained formaction formenctype formmethod
+syn keyword htmlArg contained sizes scoped async reversed sandbox srcdoc
+syn keyword htmlArg contained hidden role
+syn match   htmlArg "\<\(aria-[\-a-zA-Z0-9_]\+\)=" contained
+syn match   htmlArg contained "\s*data-[-a-zA-Z0-9_]\+"
+
+
+NeoBundle 'pangloss/vim-javascript'
 NeoBundle 'surround.vim'
-NeoBundle 'Townk/vim-autoclose'
+"NeoBundle 'Townk/vim-autoclose'
 NeoBundle 'scrooloose/nerdtree'
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'mattn/emmet-vim'
 NeoBundle 'chriskempson/vim-tomorrow-theme'
+
 "vimproc
 NeoBundle 'Shougo/vimproc', {
   \ 'build' : {
@@ -189,6 +220,7 @@ NeoBundle 'Shougo/vimproc', {
   \ 'unix' : 'make -f make_unix.mak',
   \    },
   \ }
+
 NeoBundle 'othree/html5.vim'
 let g:html5_event_handler_attributes_complete = 0
 let g:html5_event_handler_attributes_complete = 0
@@ -198,10 +230,9 @@ let g:html5_aria_attributes_complete = 0
 "easy-align
 NeoBundle 'junegunn/vim-easy-align'
 vnoremap <silent> <Enter> :EasyAlign<cr>
-
 "powerline.vim
 NeoBundle 'Lokaltog/powerline', { 'rtp' : 'powerline/bindings/vim'} 
-
+"
 "MarkDown
 NeoBundle 'plasticboy/vim-markdown'
 NeoBundle 'kannokanno/previm'
@@ -216,12 +247,12 @@ au BufNewFile,BufRead *.php let g:vim_tags_project_tags_command = "ctags --langu
 au BufNewFile,BufRead *.php set tags+=~/php.tags
 nnoremap <C-]> g<C-]>
 
-
 call neobundle#end()
 
 filetype plugin indent on
 
 runtime macros/matchit.vim
+
 "</で閉じタグを自動補完
 autocmd FileType html inoremap <silent> <buffer> </ </<C-x><C-o>
 autocmd FileType php inoremap <silent> <buffer> </ </<C-x><C-o>
@@ -252,7 +283,7 @@ let php_parent_error_close = 1
 "inoremap <expr> <Tab> MyTabFunc()
 
 autocmd FileType php,ctp :set dictionary=~/.vim/dict/php.dict
-"ファイルタイプごとのインデント
+
 augroup fileTypeIndent
 	autocmd!
 		autocmd BufRead,BufNewFile *.php setlocal shiftwidth=4 softtabstop=4 tabstop=4 noexpandtab autoindent smartindent
@@ -263,25 +294,23 @@ augroup fileTypeIndent
 		autocmd BufRead,BufNewFile *.xml setlocal shiftwidth=2 softtabstop=2 tabstop=2 noexpandtab
 augroup END
 
-"autocmd filetype php setlocal shiftwidth=4 softtabstop=4 tabstop=4 noexpandtab
-"autocmd filetype html,coffee,javascript setlocal shiftwidth=2 softtabstop=2 tabstop=2 noexpandtab
-"if expand("%:t") =~ ".*\.php"
-"  set noexpandtab
-"  set tabstop=4
-"  set shiftwidth=4
-"endif
+"autocmd filetype html,coffee,javascript setlocal shiftwidth=2 softtabstop=2 tabstop=2 expandtab
+
 "if expand("%:t") =~ ".*\.js"
 "  set noexpandtab
 "  set tabstop=2
 "  set shiftwidth=2
-"endif
-"if expand("%:t") =~ ".*\.css"
-"  set noexpandtab
-"  set tabstop=2
-"  set shiftwidth=2
+"  set listchars=eol:×,tab:¦ ,trail:·
 "endif
 "if expand("%:t") =~ ".*\.html"
 "  set noexpandtab
 "  set tabstop=2
 "  set shiftwidth=2
+"  set listchars=eol:×,tab:¦ ,trail:·
+"endif
+"if expand("%:t") =~ ".*\.css"
+"  set noexpandtab
+"  set tabstop=2
+"  set shiftwidth=2
+"  set listchars=eol:×,tab:¦ ,trail:·
 "endif
