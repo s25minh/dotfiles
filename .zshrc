@@ -4,14 +4,14 @@
 # # General Settings
 # # ------------------------------
 
+export PATH=/usr/local/mysql/bin:$PATH:
 export PATH=/usr/local/bin:$PATH
 export PATH=/usr/local/sbin:$PATH
-export PATH=/usr/local/mysql/bin:$PATH
-#export PATH=/usr/bin:$PATH
 export EDITOR=vim        # エディタをvimに設定
 export LANG=ja_JP.UTF-8  # 文字コードをUTF-8に設定
 export KCODE=u           # KCODEにUTF-8を設定
 export AUTOFEATURE=true  # autotestでfeatureを動かす
+export PATH=$PATH:~/Library/Python/2.7/bin
 
 bindkey -v              # キーバインドをviモードに設定
 setopt NO_beep
@@ -55,65 +55,33 @@ autoload -U colors; colors
 # Look And Feel Settings
 # ------------------------------
 ### Ls Color ###
-#unset LSCOLORS
-#case "${TERM}" in
-#xterm)
-#  export TERM=xterm-color
-#		;;
-#kterm)
-#	export TERM=kterm-color
-#	# set BackSpace control character
-#	stty erase
-#  ;;
-#cons25)
-#	unset LANG
-#	export LSCOLORS=ExFxCxdxBxegedabagacad
-#    export
-#LS_COLORS='di=01;34:ln=01;35:so=01;32:ex=01;31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
-#	zstyle ':completion:*' list-colors \
-#		'di=;34;1' 'ln=;35;1' 'so=;32;1' 'ex=31;1' 'bd=46;34' 'cd=43;34'
-#	;;
-#esac
+unset LSCOLORS
+case "${TERM}" in
+xterm)
+  export TERM=xterm-color
+		;;
+kterm)
+	export TERM=kterm-color
+	# set BackSpace control character
+	stty erase
+  ;;
+cons25)
+	unset LANG
+	export LSCOLORS=ExFxCxdxBxegedabagacad
+    export
+LS_COLORS='di=01;34:ln=01;35:so=01;32:ex=01;31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
+	zstyle ':completion:*' list-colors \
+		'di=;34;1' 'ln=;35;1' 'so=;32;1' 'ex=31;1' 'bd=46;34' 'cd=43;34'
+	;;
+esac
 ## #Prompt ###
 ## プロンプトに色を付ける
 # 一般ユーザ時
-#tmp_prompt="%F{blue}[%n-%D{%m/%d %T}]%f "
-#tmp_prompt="%{${fg[cyan]}%}%n%# %{${reset_color}%}"
-#tmp_prompt2="%{${fg[green]}%}[%~]%{${reset_color}%}"
-#tmp_sprompt="%{${fg[yellow]}%}%r is correct? [Yes, No, Abort, Edit]:%{${reset_color}%}"
-
-
-#rootユーザ時(太字にし、アンダーバーをつける)
-#if [ ${UID} -eq 0 ]; then      
-#    tmp_prompt="%B%U${tmp_prompt}%u%b"        
-#    tmp_prompt2="%B%U${tmp_prompt2}%u%b"          
-#    tmp_rprompt="%B%U${tmp_rprompt}%u%b"            
-#    tmp_sprompt="%B%U${tmp_sprompt}%u%b"        
-#fi
-
-PROMPT="%B%{${fg[red]}%}[ %~ ]%{${reset_color}%}%b
- %F{green}%n%{${reset_color}@%F{cyan}%m%{${reset_color}%}%F{yellow} >> %{${reset_color}%}%f"   # 通常のプロンプト
-#PROMPT2="%F{blue}[%n-%D{%m/%d %T}]%f " # 右側のプロンプト
-#SPROMPT=$tmp_sprompt  # スペル訂正用プロンプト
-
-# SSHログイン時のプロンプト
-[ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
-      PROMPT="%{${fg[white]}%}${HOST%%.*} ${PROMPT}"
-;
-
-#Title
-precmd() {
-    [[ -t 1 ]] || return
-    case $TERM in
-        *xterm*|rxvt|(dt|k|E)term)
-        print -Pn "\e]2;[%~]\a"
-        ;;
-        # screen)
-        #       #print -Pn "\e]0;[%n@%m %~] [%l]\a"
-        #       print -Pn "\e]0;[%n@%m %~]\a"
-        #       ;;
-    esac
-}
+autoload colors
+colors
+local cur_dir="%B%F{red}[Current Path: %~ ]%f%b"$'\n'
+local main="%B%F{green}%n%f%b@%F{blue}%m%f"
+PROMPT=" $cur_dir$main %F{yellow}>>%f "
 
 # ------------------------------
 # Other Settings
@@ -123,6 +91,14 @@ if [ -f ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
     source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi 
 
+#eval $(gdircolors ~/dircolors/dircolors-solarized/dircolors.ansi-universal)
+#if [ -f ~/.dircolors ]; then
+#    if type dircolors > /dev/null 2>&1; then
+#        eval $(dircolors ~/.dircolors)
+#    elif type gdircolors > /dev/null 2>&1; then
+#        eval $(gdircolors ~/.dircolors)
+#    fi
+#fi 
 if [ -n "$LS_COLORS" ]; then
     zstyle ':completion:*' list-color ${(s.:.)LS_COLORS}
 fi
@@ -141,4 +117,3 @@ alias mv='mv -i'
 function cd() {
   builtin cd $@ && ls;
 }
-
